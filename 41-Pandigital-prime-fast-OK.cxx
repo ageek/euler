@@ -18,36 +18,22 @@
 //
 //
 //I/O: Enable O3 optimization for g++ 
-//(base) topo@topobox:~/myrep/euler$ gpp -O3 41-Pandigital-prime-terribly-slow-13s-ok.cxx
-//(base) topo@topobox:~/myrep/euler$ time ./a.out
+//(base) topo@topobox:~/myrep/euler$ gpp 41-Pandigital-prime-fast-OK.cxx 
+//(base) topo@topobox:~/myrep/euler$ time ./a.out 
 //7652413
 //
-//real	0m1.940s
-//user	0m1.928s
-//sys	0m0.001s
-//(base) topo@topobox:~/myrep/euler$ gpp 41-Pandigital-prime-terribly-slow-13s-ok.cxx
-//(base) topo@topobox:~/myrep/euler$ time ./a.out
-//7652413
-//
-//real	0m16.329s
-//user	0m16.242s
+//real	0m0.285s
+//user	0m0.247s
 //sys	0m0.004s
+//(base) topo@topobox:~/myrep/euler$ gpp -O3 41-Pandigital-prime-fast-OK.cxx 
+//(base) topo@topobox:~/myrep/euler$ time ./a.out 
+//7652413
+//
+//real	0m0.067s
+//user	0m0.037s
+//sys	0m0.000s
 //(base) topo@topobox:~/myrep/euler$
 //
-
-//not used here
-bool isPrime(int num) {
-    if(num <= 1)
-        return false;
-
-    bool result = true;
-    for(int x=2; x*x <= num; x++) {
-        if(num %x ==0){
-            result = false;
-        }
-    }
-    return result;
-}
 
 int main() {
     //precalculate all primes till x*x <= 987654321
@@ -71,30 +57,36 @@ int main() {
         if(p)
             primes.push_back(i);
     }
-    // for each size of digits i.e. 9-pandigital, 8-pandigital etc...
-    std::string current = "987654321";
-    while(current.size() > 1){
-
+    // for each length of digits i.e. 9-pandigital, 8-pandigital etc. check if its prime
+    //
+    int x=0;
+    while(x < 8){
+        std::string current = "987654321";
+        //erase one char at a time
+        //and check all permutations for the modified string: current
+        current.erase(0,x);
         do {
             int a = std::stoi(current);
-            //std::cout << a << std::endl;
+            //odd check to speed up
             if(a%2 !=0) {
                 bool t = true;
                 for(auto p : primes) {
                     if(p *p > a)
                         break;
-                    if(a % p == 0)
+                    if(a % p == 0){
                         t = false;
+                        break; 
+                    }
                 }
                 if(t) {
-                    std::cout << a << std::endl;
                     //Found one, bail out!
+                    std::cout << a << std::endl;
                     return 0;
                 }
             }
         } while(std::prev_permutation(current.begin(), current.end()));
-        //remove one char for next iteration of permutations
-        current.erase(0,1);
+
+        x++;
     }
 
     return 0;
